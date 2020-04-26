@@ -12,10 +12,11 @@
 
   tasks:
 
-  - name: slurp my own authorized keys for later use
-    slurp:
-      src: /home/{{ ansible_user }}/.ssh/authorized_keys
-    register: git_authorized_key
+# This is done in the lab environment but probably something to consider "at home"
+#  - name: slurp my own public key for later use
+#    slurp:
+#      src: /home/{{ ansible_user }}/.ssh/id_rsa.pub
+#    register: git_authorized_key
 
   - name: install some additional convenience software on the control node
     package:
@@ -35,11 +36,12 @@
       comment: "Git server user"
       shell: /usr/bin/git-shell
 
-  - name: add the newly created SSH key to authorized keys
-    authorized_key:
-      user: "{{ git_user }}"
-      state: present
-      key: "{{ git_authorized_key['content'] | b64decode }}"
+# This is done in the lab environment but probably something to consider "at home"
+#  - name: add the newly created SSH key to authorized keys
+#    authorized_key:
+#      user: "{{ git_user }}"
+#      state: present
+#      key: "{{ git_authorized_key['content'] | b64decode }}"
 
   - name: define projects directory variable
     set_fact:
