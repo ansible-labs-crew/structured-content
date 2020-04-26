@@ -8,6 +8,7 @@
     git_user: ec2-user
     projects_dir: projects
     git_project: structured-content
+    username: "{{ ansible_user }}"  # just because we run it on localhost
 
   tasks:
 
