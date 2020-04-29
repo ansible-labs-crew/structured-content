@@ -5,18 +5,18 @@
   gather_facts: false
 
   vars:
-    git_user: ec2-user
+    git_user: git
     projects_dir: projects
     git_project: structured-content
     username: "{{ ansible_user }}"  # just because we run it on localhost
+    reference_user: ec2-user
 
   tasks:
 
-# This is done in the lab environment but probably something to consider "at home"
-#  - name: slurp my own public key for later use
-#    slurp:
-#      src: /home/{{ ansible_user }}/.ssh/id_rsa.pub
-#    register: git_authorized_key
+  - name: slurp the reference user's authorized keys
+    slurp:
+      src: /home/{{ reference_user }}/.ssh/authorized_keys
+    register: git_authorized_key
 
   - name: install some additional convenience software on the control node
     package:
@@ -30,18 +30,17 @@
       dest: /etc/shells
       line: /usr/bin/git-shell
 
-  - name: git user exists and uses git-shell
+  - name: git user '{{ git_user }}' exists and uses git-shell
     user:
       name: "{{ git_user }}"
       comment: "Git server user"
       shell: /usr/bin/git-shell
 
-# This is done in the lab environment but probably something to consider "at home"
-#  - name: add the newly created SSH key to authorized keys
-#    authorized_key:
-#      user: "{{ git_user }}"
-#      state: present
-#      key: "{{ git_authorized_key['content'] | b64decode }}"
+  - name: add the slurped authorized keys to the git user
+    authorized_key:
+      user: "{{ git_user }}"
+      state: present
+      key: "{{ git_authorized_key['content'] | b64decode }}"
 
   - name: define projects directory variable
     set_fact:
